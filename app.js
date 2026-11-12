@@ -50,10 +50,10 @@ let draft = null;
 const newStep = t => ({ type: t, title: t === 'work' ? 'Effort' : 'Pause', sec: t === 'work' ? 30 : 10, rep: 1, img: '' });
 
 function openEditor(w) {
-  draft = w ? JSON.parse(JSON.stringify(w)) : { id: Date.now(), title: '', rounds: 1, img: '', sound: 'buzzer', steps: [newStep('work'), newStep('rest')] };
+  draft = w ? JSON.parse(JSON.stringify(w)) : { id: Date.now(), title: '', rounds: 1, img: '', voice: true, steps: [newStep('work'), newStep('rest')] };
   $('#wTitle').value = draft.title;
   if ($('#wRounds')) $('#wRounds').value = draft.rounds || 1;
-  if ($('#wSound')) $('#wSound').value = draft.sound || 'buzzer';
+  if ($('#wVoice')) $('#wVoice').checked = draft.voice !== false;
   renderSteps();
   renderCover();
   $('#editor').hidden = false;
@@ -132,14 +132,14 @@ $('#save').onclick = () => {
   if (!draft.steps.length) { alert('Ajoute au moins une étape.'); return; }
   draft.title = $('#wTitle').value.trim() || 'Entraînement';
   draft.rounds = Math.max(1, +(($('#wRounds') || {}).value) || 1);
-  draft.sound = ($('#wSound') || {}).value || 'buzzer';
+  draft.voice = $('#wVoice') ? $('#wVoice').checked : true;
   const i = workouts.findIndex(x => x.id === draft.id);
   if (i < 0) workouts.push(draft); else workouts[i] = draft;
   persist(); $('#editor').hidden = true; renderHome();
 };
 
 /* ---------- Lecteur ---------- */
-let P = null, actx = null;
+let P = null;
 function speak(text) {
   try {
     const u = new SpeechSynthesisUtterance(text);
@@ -149,16 +149,8 @@ function speak(text) {
     speechSynthesis.cancel(); speechSynthesis.speak(u);
   } catch (e) {}
 }
-function beep(f, d) {
-  try {
-    const o = actx.createOscillator(), g = actx.createGain();
-    o.frequency.value = f; g.gain.value = .2; o.connect(g); g.connect(actx.destination);
-    o.start(); o.stop(actx.currentTime + d);
-  } catch (e) {}
-}
 
 async function startPlayer(w) {
-  try { actx = actx || new (window.AudioContext || window.webkitAudioContext)(); actx.resume(); } catch (e) {}
   P = { w, seq: expand(w), paused: false };
   $('#player').hidden = false;
   loadStep(0);
@@ -176,11 +168,11 @@ function loadStep(i) {
     $('#pImg').hidden = true; $('#pTime').textContent = '';
     $('#pToggle').hidden = $('#pSkip').hidden = true;
     clearInterval(P.timer); P.done = true;
-    if (P.w.sound === 'voice') speak('Entraînement terminé');
+    if (P.w.voice !== false) speak('Entraînement terminé');
     return;
   }
   const s = P.seq[i];
-  if (P.w.sound === 'voice') speak(s.title);
+  if (P.w.voice !== false) speak(s.title);
   P.left = s.sec * 1000; P.last = Date.now(); P.shown = s.sec;
   p.className = s.type;
   $('#pStep').textContent = 'Étape ' + (i + 1) + ' sur ' + P.seq.length;
@@ -194,9 +186,9 @@ function tick() {
   const now = Date.now();
   if (P.paused) { P.last = now; return; }
   P.left -= now - P.last; P.last = now;
-  if (P.left <= 0) { if (P.w.sound !== 'voice') beep(1200, .35); if (navigator.vibrate) navigator.vibrate(300); loadStep(P.i + 1); return; }
+  if (P.left <= 0) { if (navigator.vibrate) navigator.vibrate(300); loadStep(P.i + 1); return; }
   const sec = Math.ceil(P.left / 1000);
-  if (sec !== P.shown) { P.shown = sec; $('#pTime').textContent = fmt(sec); if (sec <= 3) beep(800, .1); }
+  if (sec !== P.shown) { P.shown = sec; $('#pTime').textContent = fmt(sec); }
 }
 
 $('#pToggle').onclick = () => { P.paused = !P.paused; $('#pToggle').textContent = P.paused ? 'Reprendre' : 'Suspendre'; };

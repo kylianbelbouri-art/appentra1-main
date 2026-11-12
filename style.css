@@ -34,6 +34,7 @@ input.big{font-size:1.4rem;font-weight:700;margin-bottom:14px}
 #coverPrev{width:72px;height:72px;flex:none;border-radius:14px;background:var(--line) center/cover}
 select{font:inherit;color:inherit;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:10px 12px}
 .rounds select{width:120px}
+.rounds input[type=checkbox]{width:28px;height:28px;padding:0;accent-color:var(--work)}
 .rounds{display:flex;align-items:center;gap:10px;margin-bottom:14px;color:var(--mute);font-size:.95rem}
 .rounds label{flex:1}.rounds input{width:80px;text-align:center}
 .add{display:grid;grid-template-columns:1fr 1fr;gap:10px}
