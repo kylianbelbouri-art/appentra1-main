@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Entraînements">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="theme-color" content="#EEF1F4">
+<title>Mes entraînements</title>
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icons/icon-180.png">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<main id="home">
+  <h1>Mes entraînements</h1>
+  <div id="list"></div>
+  <p id="empty">Aucun entraînement pour l’instant. Appuie sur + pour créer le premier.</p>
+</main>
+<button id="fab" aria-label="Nouvel entraînement">+</button>
+
+<section id="editor" hidden>
+  <header>
+    <button id="cancel" class="link">Annuler</button>
+    <button id="save" class="link strong">Enregistrer</button>
+  </header>
+  <div class="scroll">
+    <input id="wTitle" class="big" placeholder="Titre de l’entraînement">
+    <div class="cover">
+      <div id="coverPrev"></div>
+      <label class="pick"><span id="coverText">Ajouter une image</span><input id="wImg" type="file" accept="image/*" hidden></label>
+      <button id="coverDel" class="link" hidden>Retirer</button>
+    </div>
+    <div class="rounds">
+      <label for="wRounds">Nombre de tours (toute la séquence est répétée)</label>
+      <input id="wRounds" type="number" min="1" inputmode="numeric" value="1">
+    </div>
+    <div id="steps"></div>
+    <div class="rounds">
+      <label for="wSound">Annonce à chaque changement d’étape</label>
+      <select id="wSound"><option value="buzzer">Buzzer</option><option value="voice">Voix</option></select>
+    </div>
+    <div class="add">
+      <button id="addWork">Ajouter un effort</button>
+      <button id="addRest">Ajouter une pause</button>
+    </div>
+  </div>
+</section>
+
+<section id="player" hidden>
+  <div id="pStep"></div>
+  <h2 id="pTitle"></h2>
+  <img id="pImg" alt="" hidden>
+  <div id="pTime"></div>
+  <div class="ctrl">
+    <button id="pToggle">Suspendre</button>
+    <button id="pSkip">Passer</button>
+    <button id="pQuit">Quitter</button>
+  </div>
+</section>
+<script src="app.js"></script>
+</body>
+</html>
